@@ -1,0 +1,16 @@
+{
+  "generator-sicarator": {
+    "promptValues": {
+      "authorName": "Malo Bourry",
+      "authorEmail": "malo.bourry@theodo.com",
+      "ci": ".github",
+      "includeApi": false,
+      "includeDvc": false,
+      "includeStreamlit": false,
+      "includeHelloWorld": true
+    },
+    "projectName": "ramery",
+    "projectSlug": "poc-ramery",
+    "projectDescription": "The goal of this project is to collect data from an IoT sensor to simulate the evolution of parameters of a building model in Revit, and then display the evolution of these parameters."
+  }
+}
