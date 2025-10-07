@@ -19,7 +19,7 @@ TARGET_CLASSES = [
 ]
 
 
-def main():
+def main() -> None:
     """Main function."""
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():

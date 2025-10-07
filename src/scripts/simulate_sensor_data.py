@@ -9,7 +9,7 @@ url = "https://:5BLXGdo4TSiXZfaB33y1QQ@eu.tandem.autodesk.com/api/v1/timeseries/
 interval = 10
 
 
-def oscillating_value(t):
+def oscillating_value(t: float) -> float:
     """Retourne une valeur oscillante entre 20 et 25 basée sur le temps t."""
     return 22.5 + 2.5 * math.sin(2 * math.pi * t / 5)
 
