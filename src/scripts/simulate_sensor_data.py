@@ -6,16 +6,15 @@ import requests
 
 url = "https://:5BLXGdo4TSiXZfaB33y1QQ@eu.tandem.autodesk.com/api/v1/timeseries/models/urn:adsk.dtm:RcE1IDqYSLGLpmtoVha9Rg/streams/AQAAACJBLUpcr0ywnmQzrZqKLmwAAAAA"
 
-interval = 10
+interval = 5
 
 
 def oscillating_value(t: float) -> float:
     """Retourne une valeur oscillante entre 20 et 25 basée sur le temps t."""
-    return 22.5 + 2.5 * math.sin(2 * math.pi * t / 5)
+    return 22.5 + 2.5 * math.sin(2 * math.pi * t / 60)
 
 
 print("Envoi des données en continu... (Ctrl+C pour arrêter)")
-
 t0 = time.time()
 try:
     while True:

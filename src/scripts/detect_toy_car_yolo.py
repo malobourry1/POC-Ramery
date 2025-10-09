@@ -6,8 +6,14 @@ Affiche les boîtes englobantes et la classe. Touche q pour quitter.
 import time
 
 import cv2
-import numpy as np
 from ultralytics import YOLO
+
+from src.utils.sensors_utils import (
+    display_frame_on_camera,
+    display_information_on_camera,
+    extract_boxe_attribute,
+    send_value_to_url,
+)
 
 model = YOLO("yolov8n.pt")
 
@@ -17,6 +23,7 @@ TARGET_CLASSES = [
     "truck",
     "bus",
 ]
+URL_CAR_SENSOR = ""
 
 
 def main() -> None:
@@ -38,51 +45,24 @@ def main() -> None:
 
         boxes = []
         if hasattr(results, "boxes") and results.boxes is not None:
-            for b in results.boxes:
-                conf = float(b.conf[0]) if hasattr(b.conf, "__len__") else float(b.conf)
-                cls_id = int(b.cls[0]) if hasattr(b.cls, "__len__") else int(b.cls)
-                name = model.names[cls_id] if hasattr(model, "names") else str(cls_id)
-                if conf < CONF_THRESH:
+            for boxe in results.boxes:
+                is_boxe_detected, x1, y1, x2, y2, name, conf = extract_boxe_attribute(
+                    boxe, model, CONF_THRESH, TARGET_CLASSES
+                )
+                if not is_boxe_detected:
                     continue
-                if name in TARGET_CLASSES:
-                    xyxy = (
-                        b.xyxy[0].cpu().numpy()
-                        if hasattr(b.xyxy, "cpu")
-                        else np.array(b.xyxy[0])
-                    )
-                    x1, y1, x2, y2 = map(int, xyxy)
-                    boxes.append((x1, y1, x2, y2, name, conf))
+                boxes.append((x1, y1, x2, y2, name, conf))
 
         for x1, y1, x2, y2, name, conf in boxes:
-            label = f"{name} {conf:.2f}"
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(
-                frame,
-                label,
-                (x1, y1 - 6),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.5,
-                (0, 255, 0),
-                1,
-            )
+            display_frame_on_camera(frame, x1, y1, x2, y2, name, conf)
 
-        fps = 1.0 / (time.time() - fps_time) if time.time() - fps_time > 0 else 0.0
-        fps_time = time.time()
-        cv2.putText(
-            frame,
-            f"FPS: {fps:.1f}  Detected: {len(boxes)}",
-            (10, 20),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.6,
-            (255, 255, 0),
-            2,
-        )
+        display_information_on_camera(frame, boxes, fps_time)
 
         cv2.imshow("Détection voiture miniature (YOLOv8)", frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
-
+        send_value_to_url(URL_CAR_SENSOR, "count_cars", len(boxes))
     cap.release()
     cv2.destroyAllWindows()
 
