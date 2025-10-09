@@ -2,9 +2,11 @@
 
 import json
 import time
+from typing import Any
 
 import cv2
 import numpy as np
+import numpy.typing as npt
 import requests
 
 
@@ -24,7 +26,7 @@ def send_value_to_url(url: str, parameter_name: str, parameter_value: float) -> 
 
 
 def display_frame_on_camera(
-    frame: np.ndarray, x1: int, y1: int, x2: int, y2: int, name: str, conf: float
+    frame: cv2.Mat | npt.NDArray[Any], x1: int, y1: int, x2: int, y2: int, name: str, conf: float
 ) -> None:
     """Displays a rectangle with a label on the camera feed."""
     label = f"{name} {conf:.2f}"
@@ -41,7 +43,7 @@ def display_frame_on_camera(
 
 
 def display_information_on_camera(
-    frame: np.ndarray, boxes: list[tuple], fps_time: time
+    frame: cv2.Mat | npt.NDArray[Any], boxes: list[tuple[Any, ...]], fps_time: float
 ) -> None:
     """Displays information on the camera feed."""
     fps = 1.0 / (time.time() - fps_time) if time.time() - fps_time > 0 else 0.0
@@ -57,7 +59,9 @@ def display_information_on_camera(
     )
 
 
-def extract_boxe_attribute(boxe, model, conf_threshold, target_classes) -> tuple:
+def extract_boxe_attribute(
+    boxe: Any, model: Any, conf_threshold: float, target_classes: list[str]
+) -> tuple[bool, int, int, int, int, str, float]:
     """Extract attributes from a bounding box."""
     conf = float(boxe.conf[0]) if hasattr(boxe.conf, "__len__") else float(boxe.conf)
     cls_id = int(boxe.cls[0]) if hasattr(boxe.cls, "__len__") else int(boxe.cls)
