@@ -15,7 +15,7 @@ from src.utils.sensors_utils import (
     send_value_to_url,
 )
 
-model = YOLO("yolov8n.pt")
+model = YOLO("models/mini_cars_best.pt")
 
 CONF_THRESH = 0.30
 TARGET_CLASSES = [
