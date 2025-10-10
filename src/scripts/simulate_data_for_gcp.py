@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 
-def publish_to_pubsub(project_id: str, topic_id: str, data: dict) -> bool:
+def publish_to_pubsub(project_id: str, topic_id: str, data: dict[str, float]) -> bool:
     """Publier un message via gcloud CLI."""
     try:
         message = json.dumps(data)
