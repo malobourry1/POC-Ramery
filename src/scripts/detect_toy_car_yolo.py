@@ -18,6 +18,7 @@ model = YOLO("models/fine-tunning-for-mini-cars.pt")
 CONF_THRESH = 0.3
 TARGET_CLASSES = ["mini-car"]
 MIN_FRAMES_VISIBLE = 20
+MIN_MISSING_FRAMES = 10
 
 URL_CAR_SENSOR = ""
 
@@ -25,6 +26,7 @@ URL_CAR_SENSOR = ""
 def main() -> None:
     """Main function."""
     active_cars = {}
+    disappeared_cars = {}
     count = 0
     for results in model.track(
         source=0,
@@ -69,16 +71,22 @@ def main() -> None:
             tid for tid in list(active_cars.keys()) if tid not in current_ids
         ]
         for tid in disappeared_ids:
-            if (
-                not active_cars[tid]["counted"]
-                and active_cars[tid]["frames_visible"] >= MIN_FRAMES_VISIBLE
-            ):
-                count += 1
-                active_cars[tid]["counted"] = True
-                print(f"✅ Voiture comptée ! (ID {tid}) → Total = {count}")
+            if tid not in disappeared_cars:
+                disappeared_cars[tid] = {"frames_missing": 1, **active_cars[tid]}
+            else:
+                disappeared_cars[tid]["frames_missing"] += 1
 
-            # Supprimer les voitures totalement disparues
-            del active_cars[tid]
+            if disappeared_cars[tid]["frames_missing"] > MIN_MISSING_FRAMES:
+                if (
+                    not disappeared_cars[tid]["counted"]
+                    and disappeared_cars[tid]["frames_visible"] >= MIN_FRAMES_VISIBLE
+                ):
+                    count += 1
+                    disappeared_cars[tid]["counted"] = True
+                    print(f"✅ Voiture comptée ! (ID {tid}) → Total = {count}")
+
+                del active_cars[tid]
+                del disappeared_cars[tid]
 
         display_information_on_camera(frame, count)
 
