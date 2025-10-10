@@ -1,5 +1,5 @@
-train: images/train
-val: images/val
+train: images_cropped/train
+val: images_cropped/val
 
 nc: 1
 names: ['mini-car']
