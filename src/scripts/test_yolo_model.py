@@ -5,6 +5,9 @@ model = YOLO("models/fine-tunning-for-mini-cars.pt")
 img_name = "PXL_20251009_124551905.jpg"
 
 img = cv2.imread(f"dataset/images/val/{img_name}")
+if img is None:
+    raise FileNotFoundError(f"Image not found: dataset/images/val/{img_name}")
+
 h, w, _ = img.shape
 
 # Recadrage central (exemple)

@@ -64,11 +64,11 @@ def display_information_on_camera(
 
 def extract_boxe_attribute(
     boxe: Any, model: Any, conf_threshold: float, target_classes: list[str]
-) -> tuple[bool, int, int, int, int, str, float]:
+) -> tuple[bool, int, int, int, int, str, float, int]:
     """Extract attributes from a bounding box."""
     conf = float(boxe.conf[0]) if hasattr(boxe.conf, "__len__") else float(boxe.conf)
     cls_id = int(boxe.cls[0]) if hasattr(boxe.cls, "__len__") else int(boxe.cls)
-    name = model.names[cls_id] if hasattr(model, "names") else str(cls_id)
+    name = str(model.names[cls_id] if hasattr(model, "names") else cls_id)
     if conf < conf_threshold:
         return False, 0, 0, 0, 0, "", 0.0, 0
     if name in target_classes:
