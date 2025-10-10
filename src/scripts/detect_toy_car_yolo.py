@@ -95,7 +95,9 @@ def main() -> None:
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
-        send_value_to_url(URL_CAR_SENSOR, TANDEM_PARAMETER_NAME, count)
+
+        if URL_CAR_SENSOR is not None:
+            send_value_to_url(URL_CAR_SENSOR, TANDEM_PARAMETER_NAME, count)
 
 
 if __name__ == "__main__":
