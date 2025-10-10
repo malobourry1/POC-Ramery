@@ -13,7 +13,7 @@ cache: false
 device: cpu
 workers: 8
 project: null
-name: fine-tunning-for-mini-cars
+name: fine-tunning-for-mini-cars3
 exist_ok: false
 pretrained: true
 optimizer: auto
@@ -103,4 +103,4 @@ auto_augment: randaugment
 erasing: 0.4
 cfg: null
 tracker: botsort.yaml
-save_dir: /Users/malobourry/Documents/Projects/ramery/runs/detect/fine-tunning-for-mini-cars
+save_dir: /Users/malobourry/Documents/Projects/ramery/runs/detect/fine-tunning-for-mini-cars3

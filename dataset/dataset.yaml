@@ -1,5 +1,21 @@
-train: images_cropped/train
-val: images_cropped/val
+# Images et labels pour l'entraînement
+train: 
+  images: dataset/images_cropped/train
+  labels: dataset/labels_cropped/train
 
+# Images et labels pour la validation
+val: 
+  images: dataset/images_cropped/val
+  labels: dataset/labels_cropped/val
+
+# Images et labels pour le test
+test: 
+  images: dataset/images_cropped/test
+  labels: dataset/labels_cropped/test
+
+# Nombre de classes
 nc: 1
-names: ['mini-car']
+
+# Noms des classes
+names:
+  0: 'mini-car'
