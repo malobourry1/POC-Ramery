@@ -5,6 +5,7 @@ from pathlib import Path
 
 PROJECT_ROOT_PATH = Path(__file__).parents[1]
 URL_CAR_SENSOR = os.environ.get("URL_CAR_SENSOR")
+URL_TEMPERATURE_SENSOR = os.environ.get("URL_TEMPERATURE_SENSOR")
 
 CONF_THRESH = 0.3
 TARGET_CLASSES = ["mini-car"]
