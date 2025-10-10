@@ -3,24 +3,26 @@ Détection en temps réel via la caméra du Mac avec YOLOv8 (ultralytics).
 Affiche les boîtes englobantes et la classe. Touche q pour quitter.
 """  # noqa: D205
 
+import os
+
 import cv2
 from ultralytics import YOLO
 
 from src.utils.sensors_utils import (
     display_frame_on_camera,
     display_information_on_camera,
-    # send_value_to_url,
     extract_boxe_attribute,
+    send_value_to_url,
 )
 
 model = YOLO("models/fine-tunning-for-mini-cars.pt")
+URL_CAR_SENSOR = os.environ.get("URL_CAR_SENSOR")
 
 CONF_THRESH = 0.3
 TARGET_CLASSES = ["mini-car"]
-MIN_FRAMES_VISIBLE = 20
+MIN_FRAMES_VISIBLE = 10
 MIN_MISSING_FRAMES = 10
-
-URL_CAR_SENSOR = ""
+TANDEM_PARAMETER_NAME = "count_vehicle_value"
 
 
 def main() -> None:
@@ -93,7 +95,7 @@ def main() -> None:
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
-        # send_value_to_url(URL_CAR_SENSOR, "count_cars", len(boxes))
+        send_value_to_url(URL_CAR_SENSOR, TANDEM_PARAMETER_NAME, count)
 
 
 if __name__ == "__main__":
