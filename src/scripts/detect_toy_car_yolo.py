@@ -14,7 +14,7 @@ from src.utils.sensors_utils import (
     extract_boxe_attribute,
 )
 
-model = YOLO("models/mini_cars_clean_best.pt")
+model = YOLO("models/fine-tunning-for-mini-cars.pt")
 
 CONF_THRESH = 0.3
 TARGET_CLASSES = ["mini-car"]

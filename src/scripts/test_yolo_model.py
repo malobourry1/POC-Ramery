@@ -1,7 +1,7 @@
 import cv2  # noqa: D100
 from ultralytics import YOLO
 
-model = YOLO("models/mini_cars_clean_best.pt")
+model = YOLO("models/fine-tunning-for-mini-cars.pt")
 img_name = "PXL_20251009_124551905.jpg"
 
 img = cv2.imread(f"dataset/images/val/{img_name}")
