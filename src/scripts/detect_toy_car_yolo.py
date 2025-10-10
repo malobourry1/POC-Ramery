@@ -48,7 +48,6 @@ def main() -> None:
                     continue
                 boxes.append((x1, y1, x2, y2, name, conf, track_id))
 
-                # Ne traiter que les objets avec un ID valide
                 if track_id != -1:
                     current_ids.add(track_id)
                     if track_id not in active_cars:
