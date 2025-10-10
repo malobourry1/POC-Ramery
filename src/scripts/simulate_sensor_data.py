@@ -24,17 +24,21 @@ try:
         value = oscillating_value(t)
         payload = [{"temperature_value": round(value, 2)}]
 
-        try:
-            response = requests.post(
-                URL_TEMPERATURE_SENSOR,
-                headers={"Content-Type": "application/json"},
-                data=json.dumps(payload),
-                timeout=2,
-            )
-            if response.status_code != 200:
-                print(f"Erreur HTTP {response.status_code}: {response.text}")
-        except requests.RequestException as e:
-            print(f"Erreur d envoi : {e}")
+        # Envoyer les données seulement si l'URL est configurée
+        if URL_TEMPERATURE_SENSOR is not None:
+            try:
+                response = requests.post(
+                    URL_TEMPERATURE_SENSOR,
+                    headers={"Content-Type": "application/json"},
+                    data=json.dumps(payload),
+                    timeout=2,
+                )
+                if response.status_code != 200:
+                    print(f"Erreur HTTP {response.status_code}: {response.text}")
+            except requests.RequestException as e:
+                print(f"Erreur d envoi : {e}")
+        else:
+            print(f"URL_TEMPERATURE_SENSOR non configurée. Données simulées : {payload}")
 
         time.sleep(interval)
 
