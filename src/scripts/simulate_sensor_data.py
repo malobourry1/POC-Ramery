@@ -38,7 +38,9 @@ try:
             except requests.RequestException as e:
                 print(f"Erreur d envoi : {e}")
         else:
-            print(f"URL_TEMPERATURE_SENSOR non configurée. Données simulées : {payload}")
+            print(
+                f"URL_TEMPERATURE_SENSOR non configurée. Données simulées : {payload}"
+            )
 
         time.sleep(interval)
 
