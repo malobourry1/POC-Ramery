@@ -3,11 +3,17 @@ Détection en temps réel via la caméra du Mac avec YOLOv8 (ultralytics).
 Affiche les boîtes englobantes et la classe. Touche q pour quitter.
 """  # noqa: D205
 
-import os
-
 import cv2
 from ultralytics import YOLO
 
+from src.constants import (
+    CONF_THRESH,
+    MIN_FRAMES_VISIBLE,
+    MIN_MISSING_FRAMES,
+    TANDEM_VEHICLE_COUNT_PARAMETER_NAME,
+    TARGET_CLASSES,
+    URL_CAR_SENSOR,
+)
 from src.utils.sensors_utils import (
     display_frame_on_camera,
     display_information_on_camera,
@@ -16,17 +22,10 @@ from src.utils.sensors_utils import (
 )
 
 model = YOLO("models/fine-tunning-for-mini-cars.pt")
-URL_CAR_SENSOR = os.environ.get("URL_CAR_SENSOR")
-
-CONF_THRESH = 0.3
-TARGET_CLASSES = ["mini-car"]
-MIN_FRAMES_VISIBLE = 10
-MIN_MISSING_FRAMES = 10
-TANDEM_PARAMETER_NAME = "count_vehicle_value"
 
 
-def main() -> None:
-    """Main function."""
+def simulate_vehicle_detector() -> None:
+    """Simulate vehicle detection with the Mac Webcam."""
     active_cars = {}
     disappeared_cars = {}
     count = 0
@@ -67,7 +66,6 @@ def main() -> None:
                 (255, 0, 0),
                 2,
             )
-        # Détecter les voitures disparues
         disappeared_ids = [
             tid for tid in list(active_cars.keys()) if tid not in current_ids
         ]
@@ -97,8 +95,10 @@ def main() -> None:
             break
 
         if URL_CAR_SENSOR is not None:
-            send_value_to_url(URL_CAR_SENSOR, TANDEM_PARAMETER_NAME, count)
+            send_value_to_url(
+                URL_CAR_SENSOR, TANDEM_VEHICLE_COUNT_PARAMETER_NAME, count
+            )
 
 
 if __name__ == "__main__":
-    main()
+    simulate_vehicle_detector()
