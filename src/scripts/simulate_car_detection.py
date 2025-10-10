@@ -1,7 +1,4 @@
-"""detect_toy_car_yolo.py
-Détection en temps réel via la caméra du Mac avec YOLOv8 (ultralytics).
-Affiche les boîtes englobantes et la classe. Touche q pour quitter.
-"""  # noqa: D205
+"""Détection en temps réel via la caméra du Mac."""
 
 import cv2
 from ultralytics import YOLO

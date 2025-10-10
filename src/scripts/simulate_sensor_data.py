@@ -1,10 +1,12 @@
-import json  # noqa: D100
+"""Simule des données de capteur de température."""
+
+import json
 import math
 import time
 
 import requests
 
-url = "https://:5BLXGdo4TSiXZfaB33y1QQ@eu.tandem.autodesk.com/api/v1/timeseries/models/urn:adsk.dtm:RcE1IDqYSLGLpmtoVha9Rg/streams/AQAAACJBLUpcr0ywnmQzrZqKLmwAAAAA"
+from src.constants import URL_TEMPERATURE_SENSOR
 
 interval = 5
 
@@ -24,7 +26,7 @@ try:
 
         try:
             response = requests.post(
-                url,
+                URL_TEMPERATURE_SENSOR,
                 headers={"Content-Type": "application/json"},
                 data=json.dumps(payload),
                 timeout=2,
