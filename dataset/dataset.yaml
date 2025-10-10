@@ -1,5 +1,21 @@
-train: images/train
-val: images/val
+# Images et labels pour l'entraînement
+train: 
+  images: dataset/images_cropped/train
+  labels: dataset/labels_cropped/train
 
-nc: 16
-names: ['dog', 'person', 'cat', 'tv', 'car', 'meatballs', 'marinara sauce', 'tomato soup', 'chicken noodle soup', 'french onion soup', 'chicken breast', 'ribs', 'pulled pork', 'hamburger', 'cavity', 'mini-car']
+# Images et labels pour la validation
+val: 
+  images: dataset/images_cropped/val
+  labels: dataset/labels_cropped/val
+
+# Images et labels pour le test
+test: 
+  images: dataset/images_cropped/test
+  labels: dataset/labels_cropped/test
+
+# Nombre de classes
+nc: 1
+
+# Noms des classes
+names:
+  0: 'mini-car'

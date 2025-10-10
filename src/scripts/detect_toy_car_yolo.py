@@ -12,23 +12,20 @@ from src.utils.sensors_utils import (
     display_frame_on_camera,
     display_information_on_camera,
     extract_boxe_attribute,
-    send_value_to_url,
 )
 
-model = YOLO("models/mini_cars_best.pt")
+model = YOLO("models/fine-tunning-for-mini-cars.pt")
 
-CONF_THRESH = 0.30
-TARGET_CLASSES = [
-    "car",
-    "truck",
-    "bus",
-]
+CONF_THRESH = 0.3
+TARGET_CLASSES = ["mini-car"]
+
 URL_CAR_SENSOR = ""
 
 
 def main() -> None:
     """Main function."""
     cap = cv2.VideoCapture(0)
+    print(model.names)
     if not cap.isOpened():
         print(
             "Impossible d ouvrir la caméra. Vérifie les permissions macOS (Préférences Système → Sécurité)."
@@ -62,7 +59,7 @@ def main() -> None:
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
-        send_value_to_url(URL_CAR_SENSOR, "count_cars", len(boxes))
+        # send_value_to_url(URL_CAR_SENSOR, "count_cars", len(boxes))
     cap.release()
     cv2.destroyAllWindows()
 
