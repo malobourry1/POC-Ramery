@@ -1,27 +1,10 @@
-"""Module utilitaire pour la gestion des capteurs."""
+"""Fonctions utiles pour la détection de voitures."""
 
-import json
 from typing import Any
 
 import cv2
 import numpy as np
 import numpy.typing as npt
-import requests
-
-
-def send_value_to_url(url: str, parameter_name: str, parameter_value: float) -> None:
-    """Envoie une valeur au format JSON à une URL donnée via une requête POST."""
-    try:
-        response = requests.post(
-            url,
-            headers={"Content-Type": "application/json"},
-            data=json.dumps({parameter_name: parameter_value}),
-            timeout=2,
-        )
-        if response.status_code != 200:
-            print(f"Erreur HTTP {response.status_code}: {response.text}")
-    except requests.RequestException as e:
-        print(f"Erreur d envoi : {e}")
 
 
 def display_frame_on_camera(
