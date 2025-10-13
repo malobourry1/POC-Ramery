@@ -1,10 +1,12 @@
-import json  # noqa: D100
+"""Simule des données de capteur de température."""
+
+import json
 import math
 import time
 
 import requests
 
-url = "https://:5BLXGdo4TSiXZfaB33y1QQ@eu.tandem.autodesk.com/api/v1/timeseries/models/urn:adsk.dtm:RcE1IDqYSLGLpmtoVha9Rg/streams/AQAAACJBLUpcr0ywnmQzrZqKLmwAAAAA"
+from src.constants import URL_TEMPERATURE_SENSOR
 
 interval = 5
 
@@ -22,17 +24,23 @@ try:
         value = oscillating_value(t)
         payload = [{"temperature_value": round(value, 2)}]
 
-        try:
-            response = requests.post(
-                url,
-                headers={"Content-Type": "application/json"},
-                data=json.dumps(payload),
-                timeout=2,
+        # Envoyer les données seulement si l'URL est configurée
+        if URL_TEMPERATURE_SENSOR is not None:
+            try:
+                response = requests.post(
+                    URL_TEMPERATURE_SENSOR,
+                    headers={"Content-Type": "application/json"},
+                    data=json.dumps(payload),
+                    timeout=2,
+                )
+                if response.status_code != 200:
+                    print(f"Erreur HTTP {response.status_code}: {response.text}")
+            except requests.RequestException as e:
+                print(f"Erreur d envoi : {e}")
+        else:
+            print(
+                f"URL_TEMPERATURE_SENSOR non configurée. Données simulées : {payload}"
             )
-            if response.status_code != 200:
-                print(f"Erreur HTTP {response.status_code}: {response.text}")
-        except requests.RequestException as e:
-            print(f"Erreur d envoi : {e}")
 
         time.sleep(interval)
 
