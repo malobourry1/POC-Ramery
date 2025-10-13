@@ -5,9 +5,8 @@ import json
 import os
 from datetime import datetime
 
-from google.cloud import bigquery
+from google.cloud import bigquery  # type: ignore
 
-# Configuration depuis les variables d'environnement
 PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT", "ramery-poc-theodo")
 BIGQUERY_DATASET = os.environ.get("BIGQUERY_DATASET", "sensor_data")
 BIGQUERY_TABLE = os.environ.get("BIGQUERY_TABLE", "raw-sensor-data")
@@ -16,23 +15,22 @@ URL_TEMPERATURE_SENSOR = os.environ.get("URL_TEMPERATURE_SENSOR")
 URL_WATER_FILLRATE_SENSOR = os.environ.get("URL_WATER_FILLRATE_SENSOR")
 
 
-def main(event, context):
+def main(event: dict[str, object], context: object) -> None:
     """Fonction Cloud pour traiter les messages Pub/Sub et stocker dans BigQuery."""
     if "data" not in event:
         print("Pas de champ 'data' dans l'événement")
         return
 
-    raw_data = base64.b64decode(event["data"]).decode("utf-8")
+    raw_data = base64.b64decode(str(event["data"])).decode("utf-8")
     print(f"Raw data reçue : {raw_data}")
 
     try:
         payload = json.loads(raw_data)
     except json.JSONDecodeError:
         try:
-            # Essayer de corriger le format JavaScript vers JSON valide
-            # Ajouter des guillemets autour des clés
             import re
-            corrected_data = re.sub(r'(\w+):', r'"\1":', raw_data)
+
+            corrected_data = re.sub(r"(\w+):", r'"\1":', raw_data)
             print(f"Data corrigée : {corrected_data}")
             payload = json.loads(corrected_data)
         except json.JSONDecodeError as e:
@@ -47,7 +45,6 @@ def main(event, context):
         "RainWaterFillPercentage_value": 0.0,
     }
 
-    # Si payload est une liste, prendre le premier élément
     if isinstance(payload, list) and len(payload) > 0:
         data = payload[0]
         print(f"Données extraites du tableau : {data}")
@@ -83,7 +80,7 @@ def main(event, context):
     except Exception as e:
         print(f"Erreur BigQuery : {e}")
 
-    # Sending to Tandem (optionnel)
+    # Sending to Tandem
     if tandem_url:
         print(f"Sending to tandem at {tandem_url}, data {data}")
         # Implémentation d'envoi à Tandem si nécessaire
