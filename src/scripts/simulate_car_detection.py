@@ -1,5 +1,7 @@
 """Détection en temps réel via la caméra du Mac."""
 
+import time
+
 import cv2
 from ultralytics import YOLO
 
@@ -7,9 +9,10 @@ from src.constants import (
     CONF_THRESH,
     MIN_FRAMES_VISIBLE,
     MIN_MISSING_FRAMES,
-    TANDEM_VEHICLE_COUNT_PARAMETER_NAME,
+    PROJECT_ID,
+    SEND_INTERVAL,
     TARGET_CLASSES,
-    URL_CAR_SENSOR,
+    TOPIC_ID,
 )
 from src.utils.car_detection_utils import (
     display_frame_on_camera,
@@ -17,7 +20,7 @@ from src.utils.car_detection_utils import (
     extract_boxe_attribute,
 )
 from src.utils.info_sending_utils import (
-    send_value_to_url,
+    publish_to_pubsub,
 )
 
 model = YOLO("models/fine-tunning-for-mini-cars.pt")
@@ -28,6 +31,7 @@ def simulate_vehicle_detector() -> None:
     active_cars = {}
     disappeared_cars = {}
     count = 0
+    last_send_time = time.time()
     for results in model.track(
         source=0,
         conf=CONF_THRESH,
@@ -93,10 +97,15 @@ def simulate_vehicle_detector() -> None:
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
-        if URL_CAR_SENSOR is not None:
-            send_value_to_url(
-                URL_CAR_SENSOR, TANDEM_VEHICLE_COUNT_PARAMETER_NAME, count
+        current_time = time.time()
+        if current_time - last_send_time >= SEND_INTERVAL:
+            publish_to_pubsub(
+                project_id=PROJECT_ID,
+                topic_id=TOPIC_ID,
+                data={"count_vehicle_value": count},
             )
+            print(f"📤 Count envoyé: {count}")
+            last_send_time = current_time
 
 
 if __name__ == "__main__":
