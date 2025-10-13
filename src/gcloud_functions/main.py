@@ -4,7 +4,7 @@ import base64
 import json
 import os
 
-from gcloud_utils import (
+from gcloud_utils import (  # type: ignore
     extract_and_prepare_data,
     insert_data_in_bq_table,
     send_value_to_url,

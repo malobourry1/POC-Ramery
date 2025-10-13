@@ -7,8 +7,8 @@ from pathlib import Path
 # Ajouter le répertoire src au PYTHONPATH
 sys.path.append(str(Path(__file__).parent.parent))
 
-from constants import PROJECT_ID, SEND_INTERVAL, TOPIC_ID
-from utils.info_sending_utils import publish_to_pubsub
+from constants import PROJECT_ID, SEND_INTERVAL, TOPIC_ID  # type: ignore
+from utils.info_sending_utils import publish_to_pubsub  # type: ignore
 
 
 def simulate_sensor_data(last_send_time: float) -> float:

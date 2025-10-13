@@ -2,11 +2,12 @@
 
 import json
 from datetime import datetime
+from typing import cast
 
 import requests
-from google.cloud import bigquery  # type: ignore
+from google.cloud import bigquery
 
-from constants import (
+from constants import (  # type: ignore
     URL_CAR_SENSOR,
     URL_TEMPERATURE_SENSOR,
     URL_WATER_FILLRATE_SENSOR,
@@ -28,9 +29,11 @@ def send_value_to_url(url: str, parameter_name: str, parameter_value: float) -> 
         print(f"Erreur d envoi : {e}")
 
 
-def extract_and_prepare_data(payload: dict | list) -> dict:
+def extract_and_prepare_data(
+    payload: dict[str, object] | list[dict[str, object]],
+) -> tuple[dict[str, object], dict[str, object], str | None]:
     """Extract and prepare data from payload for BigQuery insertion."""
-    row_to_insert_in_bq = {
+    row_to_insert_in_bq: dict[str, object] = {
         "time": None,
         "temperature_value": 0.0,
         "count_vehicle_value": 0,
@@ -38,12 +41,13 @@ def extract_and_prepare_data(payload: dict | list) -> dict:
     }
 
     if isinstance(payload, list) and len(payload) > 0:
-        data = payload[0]
+        data = cast("dict[str, object]", payload[0])
         print(f"Données extraites du tableau : {data}")
     else:
-        data = payload
+        data = cast("dict[str, object]", payload)
         print(f"Données directes : {data}")
 
+    tandem_url: str | None = None
     if "temperature_value" in data:
         row_to_insert_in_bq["temperature_value"] = data["temperature_value"]
         tandem_url = URL_TEMPERATURE_SENSOR
@@ -57,8 +61,6 @@ def extract_and_prepare_data(payload: dict | list) -> dict:
             "RainWaterFillPercentage_value"
         ]
         tandem_url = URL_WATER_FILLRATE_SENSOR
-    else:
-        tandem_url = None
 
     row_to_insert_in_bq["time"] = datetime.now().isoformat()
 
@@ -66,7 +68,7 @@ def extract_and_prepare_data(payload: dict | list) -> dict:
 
 
 def insert_data_in_bq_table(
-    project_id: str, dataset_id: str, table_id: str, data_to_insert: dict
+    project_id: str, dataset_id: str, table_id: str, data_to_insert: dict[str, object]
 ) -> None:
     """Insert data in BigQuery table using gcloud CLI."""
     try:
