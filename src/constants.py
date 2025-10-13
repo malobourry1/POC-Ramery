@@ -20,7 +20,7 @@ MIN_MISSING_FRAMES = 10
 
 # GCP
 PROJECT_ID = "ramery-poc-theodo"
-TOPIC_ID = "sensor-topic"
+TOPIC_ID = "sensor-data"
 BIGQUERY_DATASET = "sensor_data"
 BIGQUERY_TABLE = "raw-sensor-data"
 SEND_INTERVAL = 3.0
