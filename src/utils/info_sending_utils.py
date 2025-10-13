@@ -1,8 +1,24 @@
-"""Script pour publier des messages sur Pub/Sub via gcloud."""
+"""Module utilitaire pour la gestion des capteurs."""
 
 import json
 import subprocess
-import sys
+
+import requests
+
+
+def send_value_to_url(url: str, parameter_name: str, parameter_value: float) -> None:
+    """Envoie une valeur au format JSON à une URL donnée via une requête POST."""
+    try:
+        response = requests.post(
+            url,
+            headers={"Content-Type": "application/json"},
+            data=json.dumps({parameter_name: parameter_value}),
+            timeout=2,
+        )
+        if response.status_code != 200:
+            print(f"Erreur HTTP {response.status_code}: {response.text}")
+    except requests.RequestException as e:
+        print(f"Erreur d envoi : {e}")
 
 
 def publish_to_pubsub(project_id: str, topic_id: str, data: dict[str, float]) -> bool:
@@ -28,17 +44,3 @@ def publish_to_pubsub(project_id: str, topic_id: str, data: dict[str, float]) ->
         print(f"❌ Erreur lors de la publication : {e}")
         print(f"Stderr: {e.stderr}")
         return False
-
-
-if __name__ == "__main__":
-    project_id = "ramery-poc-theodo"
-    topic_id = "sensor-topic"
-
-    # Données à publier
-    data = {"temperature_value": 23.93}
-
-    print(f"Envoi du message : {data}")
-    print(f"Vers le topic : {topic_id} dans le projet : {project_id}")
-
-    success = publish_to_pubsub(project_id, topic_id, data)
-    sys.exit(0 if success else 1)

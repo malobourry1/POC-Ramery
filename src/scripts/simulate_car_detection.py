@@ -11,10 +11,12 @@ from src.constants import (
     TARGET_CLASSES,
     URL_CAR_SENSOR,
 )
-from src.utils.sensors_utils import (
+from src.utils.car_detection_utils import (
     display_frame_on_camera,
     display_information_on_camera,
     extract_boxe_attribute,
+)
+from src.utils.info_sending_utils import (
     send_value_to_url,
 )
 
