@@ -51,7 +51,7 @@ def process_sensor_data(event: dict[str, object], context: object) -> None:
         table_id=BIGQUERY_TABLE,
         data_to_insert=row_to_insert_in_bq,
     )
-    tandem_url = None
+    # tandem_url = None
     if tandem_url:
         parameter_name, parameter_value = next(iter(data_for_tandem.items()))
         send_value_to_url(
