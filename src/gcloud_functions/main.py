@@ -3,9 +3,12 @@
 import base64
 import json
 import os
-from datetime import datetime
 
-from google.cloud import bigquery  # type: ignore
+from gcloud_utils import (  # type: ignore
+    extract_and_prepare_data,
+    insert_data_in_bq_table,
+    send_value_to_url,
+)
 
 PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT", "ramery-poc-theodo")
 BIGQUERY_DATASET = os.environ.get("BIGQUERY_DATASET", "sensor_data")
@@ -15,7 +18,7 @@ URL_TEMPERATURE_SENSOR = os.environ.get("URL_TEMPERATURE_SENSOR")
 URL_WATER_FILLRATE_SENSOR = os.environ.get("URL_WATER_FILLRATE_SENSOR")
 
 
-def main(event: dict[str, object], context: object) -> None:
+def process_sensor_data(event: dict[str, object], context: object) -> None:
     """Fonction Cloud pour traiter les messages Pub/Sub et stocker dans BigQuery."""
     if "data" not in event:
         print("Pas de champ 'data' dans l'événement")
@@ -38,51 +41,23 @@ def main(event: dict[str, object], context: object) -> None:
             print(f"Raw data : {raw_data}")
             return
 
-    row_to_insert_in_bq = {
-        "time": datetime.now().isoformat(),
-        "temperature_value": 0.0,
-        "count_vehicle_value": 0,
-        "RainWaterFillPercentage_value": 0.0,
-    }
+    row_to_insert_in_bq, data_for_tandem, tandem_url = extract_and_prepare_data(
+        payload=payload
+    )
 
-    if isinstance(payload, list) and len(payload) > 0:
-        data = payload[0]
-        print(f"Données extraites du tableau : {data}")
-    else:
-        data = payload
-        print(f"Données directes : {data}")
-
+    insert_data_in_bq_table(
+        project_id=PROJECT_ID,
+        dataset_id=BIGQUERY_DATASET,
+        table_id=BIGQUERY_TABLE,
+        data_to_insert=row_to_insert_in_bq,
+    )
     tandem_url = None
-    if "temperature_value" in data:
-        row_to_insert_in_bq["temperature_value"] = data["temperature_value"]
-        tandem_url = URL_TEMPERATURE_SENSOR
-    elif "count_vehicle_value" in data:
-        row_to_insert_in_bq["count_vehicle_value"] = data["count_vehicle_value"]
-        tandem_url = URL_CAR_SENSOR
-    elif "RainWaterFillPercentage_value" in data:
-        row_to_insert_in_bq["RainWaterFillPercentage_value"] = data[
-            "RainWaterFillPercentage_value"
-        ]
-        tandem_url = URL_WATER_FILLRATE_SENSOR
-    else:
-        print(f"Donnée inconnue : {data}")
-        return
-
-    # Sending to BigQuery
-    try:
-        bq_client = bigquery.Client()
-        table_id = f"{PROJECT_ID}.{BIGQUERY_DATASET}.{BIGQUERY_TABLE}"
-        errors = bq_client.insert_rows_json(table_id, [row_to_insert_in_bq])
-        if errors:
-            print(f"Erreur BigQuery : {errors}")
-        else:
-            print("Insertion réussie dans BigQuery")
-    except Exception as e:
-        print(f"Erreur BigQuery : {e}")
-
-    # Sending to Tandem
     if tandem_url:
-        print(f"Sending to tandem at {tandem_url}, data {data}")
-        # Implémentation d'envoi à Tandem si nécessaire
+        parameter_name, parameter_value = next(iter(data_for_tandem.items()))
+        send_value_to_url(
+            url=tandem_url,
+            parameter_name=parameter_name,
+            parameter_value=parameter_value,
+        )
     else:
         print("URL Tandem non configurée")
