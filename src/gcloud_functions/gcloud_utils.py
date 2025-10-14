@@ -1,7 +1,7 @@
 """Fonctions utiles pour les fonctions Google Cloud."""
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import cast
 
 import requests
@@ -62,7 +62,7 @@ def extract_and_prepare_data(
         tandem_url = URL_WATER_FILLRATE_SENSOR
         bq_table = WATER_FILLRATE_DATA_BQ_TABLE_NAME
 
-    row_to_insert_in_bq["time"] = datetime.now().isoformat()
+    row_to_insert_in_bq["time"] = (datetime.now() + timedelta(hours=2)).isoformat()
 
     return row_to_insert_in_bq, data, tandem_url, bq_table
 
