@@ -34,15 +34,8 @@ def send_value_to_url(url: str, parameter_name: str, parameter_value: float) -> 
 
 def extract_and_prepare_data(
     payload: dict[str, object] | list[dict[str, object]],
-) -> tuple[dict[str, object], dict[str, object], str | None]:
+) -> tuple[dict[str, object], dict[str, object], str | None, str]:
     """Extract and prepare data from payload for BigQuery insertion."""
-    row_to_insert_in_bq: dict[str, object] = {
-        "time": None,
-        "temperature_value": 0.0,
-        "count_vehicle_value": 0,
-        "RainWaterFillPercentage_value": 0.0,
-    }
-
     if isinstance(payload, list) and len(payload) > 0:
         data = cast("dict[str, object]", payload[0])
         print(f"Données extraites du tableau : {data}")
@@ -51,27 +44,21 @@ def extract_and_prepare_data(
         print(f"Données directes : {data}")
 
     tandem_url: str | None = None
+    row_to_insert_in_bq: dict[str, object] = {"time": None}
+    bq_table: str = TEMPERATURE_DATA_BQ_TABLE_NAME
+
     if "temperature_value" in data:
-        row_to_insert_in_bq: dict[str, object] = {
-            "time": None,
-            "temperature_value": data["temperature_value"],
-        }
+        row_to_insert_in_bq["temperature_value"] = data["temperature_value"]
         tandem_url = URL_TEMPERATURE_SENSOR
         bq_table = TEMPERATURE_DATA_BQ_TABLE_NAME
-
-    if "count_vehicle_value" in data:
-        row_to_insert_in_bq: dict[str, object] = {
-            "time": None,
-            "count_vehicle_value": data["count_vehicle_value"],
-        }
+    elif "count_vehicle_value" in data:
+        row_to_insert_in_bq["count_vehicle_value"] = data["count_vehicle_value"]
         tandem_url = URL_CAR_SENSOR
         bq_table = CAR_DATA_BQ_TABLE_NAME
-
-    if "RainWaterFillPercentage_value" in data:
-        row_to_insert_in_bq: dict[str, object] = {
-            "time": None,
-            "RainWaterFillPercentage_value": data["RainWaterFillPercentage_value"],
-        }
+    elif "RainWaterFillPercentage_value" in data:
+        row_to_insert_in_bq["RainWaterFillPercentage_value"] = data[
+            "RainWaterFillPercentage_value"
+        ]
         tandem_url = URL_WATER_FILLRATE_SENSOR
         bq_table = WATER_FILLRATE_DATA_BQ_TABLE_NAME
 
