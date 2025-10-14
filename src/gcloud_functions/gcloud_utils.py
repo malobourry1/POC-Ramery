@@ -8,9 +8,12 @@ import requests
 from google.cloud import bigquery
 
 from constants import (  # type: ignore
+    CAR_DATA_BQ_TABLE_NAME,
+    TEMPERATURE_DATA_BQ_TABLE_NAME,
     URL_CAR_SENSOR,
     URL_TEMPERATURE_SENSOR,
     URL_WATER_FILLRATE_SENSOR,
+    WATER_FILLRATE_DATA_BQ_TABLE_NAME,
 )
 
 
@@ -49,22 +52,32 @@ def extract_and_prepare_data(
 
     tandem_url: str | None = None
     if "temperature_value" in data:
-        row_to_insert_in_bq["temperature_value"] = data["temperature_value"]
+        row_to_insert_in_bq: dict[str, object] = {
+            "time": None,
+            "temperature_value": data["temperature_value"],
+        }
         tandem_url = URL_TEMPERATURE_SENSOR
+        bq_table = TEMPERATURE_DATA_BQ_TABLE_NAME
 
     if "count_vehicle_value" in data:
-        row_to_insert_in_bq["count_vehicle_value"] = data["count_vehicle_value"]
+        row_to_insert_in_bq: dict[str, object] = {
+            "time": None,
+            "count_vehicle_value": data["count_vehicle_value"],
+        }
         tandem_url = URL_CAR_SENSOR
+        bq_table = CAR_DATA_BQ_TABLE_NAME
 
     if "RainWaterFillPercentage_value" in data:
-        row_to_insert_in_bq["RainWaterFillPercentage_value"] = data[
-            "RainWaterFillPercentage_value"
-        ]
+        row_to_insert_in_bq: dict[str, object] = {
+            "time": None,
+            "RainWaterFillPercentage_value": data["RainWaterFillPercentage_value"],
+        }
         tandem_url = URL_WATER_FILLRATE_SENSOR
+        bq_table = WATER_FILLRATE_DATA_BQ_TABLE_NAME
 
     row_to_insert_in_bq["time"] = datetime.now().isoformat()
 
-    return row_to_insert_in_bq, data, tandem_url
+    return row_to_insert_in_bq, data, tandem_url, bq_table
 
 
 def insert_data_in_bq_table(
