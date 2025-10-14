@@ -12,7 +12,6 @@ from gcloud_utils import (  # type: ignore
 
 PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT", "ramery-poc-theodo")
 BIGQUERY_DATASET = os.environ.get("BIGQUERY_DATASET", "sensor_data")
-BIGQUERY_TABLE = os.environ.get("BIGQUERY_TABLE", "raw-sensor-data")
 URL_CAR_SENSOR = os.environ.get("URL_CAR_SENSOR")
 URL_TEMPERATURE_SENSOR = os.environ.get("URL_TEMPERATURE_SENSOR")
 URL_WATER_FILLRATE_SENSOR = os.environ.get("URL_WATER_FILLRATE_SENSOR")
@@ -41,14 +40,14 @@ def process_sensor_data(event: dict[str, object], context: object) -> None:
             print(f"Raw data : {raw_data}")
             return
 
-    row_to_insert_in_bq, data_for_tandem, tandem_url = extract_and_prepare_data(
-        payload=payload
+    row_to_insert_in_bq, data_for_tandem, tandem_url, bq_table = (
+        extract_and_prepare_data(payload=payload)
     )
 
     insert_data_in_bq_table(
         project_id=PROJECT_ID,
         dataset_id=BIGQUERY_DATASET,
-        table_id=BIGQUERY_TABLE,
+        table_id=bq_table,
         data_to_insert=row_to_insert_in_bq,
     )
     # tandem_url = None
