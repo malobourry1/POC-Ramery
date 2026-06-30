@@ -1,0 +1,6 @@
+"""Exemple volontairement bugué pour la démo CI."""
+
+
+def add(a: int, b: int) -> int:
+    """Additionne deux entiers."""
+    return a + "1"  # ❌ mypy : on additionne un int et une str
