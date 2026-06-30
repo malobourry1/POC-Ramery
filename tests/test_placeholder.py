@@ -6,6 +6,6 @@ def test_placeholder():
     assert True
 
 
-# def test_ci():
-#     """Placeholder test to ensure tests can run."""
-#     assert False
+def test_ci():
+    """Placeholder test to ensure tests can run."""
+    assert False
